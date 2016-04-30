@@ -55,8 +55,8 @@ public class Coordinate {
 	 * @return Coordinate object of coordinates provided.
 	 */ 
 	public static Coordinate decode(String notation) {
-		int letter = 'a' - notation.charAt(0);
-		int num = Integer.valueOf(notation.charAt(1)) - 1;
+		int letter = notation.charAt(0) - 'a';
+		int num =  8 -Integer.valueOf(notation.charAt(1) + "");
 		return new Coordinate(num, letter);
 	}
 	

@@ -10,6 +10,8 @@ public class ChessGameDriver extends JFrame implements MouseMotionListener, Mous
 	JLabel chessPiece;
 	int xAdjustment;
 	int yAdjustment;
+	
+	Color promoteColor = null;
 
 	Coordinate selectedCoord, destinationCoord;
 	JLabel output0, output1;
@@ -97,6 +99,10 @@ public class ChessGameDriver extends JFrame implements MouseMotionListener, Mous
 	private void addPiece(String ico, int num, int letter) {
 		addPiece(new ImageIcon(ico), num, letter);
 	}
+	
+	private void addPiece(String ico, Coordinate coord) {
+		addPiece(new ImageIcon(ico), coord);
+	}
 
 	public void mousePressed(MouseEvent e) {
 		chessPiece = null;
@@ -159,8 +165,16 @@ public class ChessGameDriver extends JFrame implements MouseMotionListener, Mous
 			return;
 		}
 		resetCoords();
+		
+		
 		if(isPiece)
 			parent.remove(0);
+		
+		if(promoteColor != null) {
+			chessPiece = new JLabel(new ImageIcon(promoteColor == Color.BLACK ? "BlackQueen.png" : "Queen.png"));
+			promoteColor = null;
+		}
+			
 		
 		parent.add(chessPiece);
 		
@@ -220,6 +234,17 @@ public class ChessGameDriver extends JFrame implements MouseMotionListener, Mous
 	@Override
 	public void displayResult1(String result) {
 		output1.setText(result);
+	}
+
+	@Override
+	public void promotePawn(Color color, Coordinate coord) {
+		promoteColor = color;
+	}
+
+	@Override
+	public void removePiece(Coordinate coord) {
+		JPanel panel = (JPanel) chessBoard.getComponent(coordToComponentIndex(coord));
+		panel.removeAll();
 	}
 
 }

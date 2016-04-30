@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 
+
 public class Bishop extends Piece {
 	
 	public Bishop(Color color, Coordinate coord) {

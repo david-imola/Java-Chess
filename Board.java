@@ -1,5 +1,5 @@
 
-public class Board {
+public abstract class Board {
 	private final Location[][] BOARD;
 	// A board of Locations; 8x8 with the first [] detailing the number(y)
 	// axis, and the second [] the letter(x) axis
@@ -119,5 +119,7 @@ public class Board {
 	public Piece getPieceAtCoord(Coordinate coord) {
 		return getLocAt(coord).getPiece();
 	}
+	
+	public abstract void removePieceGUI(Coordinate pawnRemove);
 	
 }

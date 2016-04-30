@@ -2,6 +2,8 @@
 //A single game of chess
 import java.util.ArrayList;
 
+/**
+ *A game class. Used for playing one game */
 public class ChessGame {
 
 	private Board board;
@@ -36,7 +38,6 @@ public class ChessGame {
                             currentPlayer = board.getBlackPlayer();
 
                     if (!makeMove(currentPlayer, selectedCoord, destinationCoord)) {
-                            gameInterface.displayResult1("Not Valid" );
                             return false;
                     } else {
                             gameInterface.displayResult1("");
@@ -74,8 +75,10 @@ public class ChessGame {
                 } else {
                         gameInterface.displayResult1("");  
                 }
-                if (ChessGame.testCheck(board, destinationCoord, selectedCoord, whiteTurn))
+                if (ChessGame.testCheck(board, destinationCoord, selectedCoord, whiteTurn)) {
+                	gameInterface.displayResult1("Check!");
                         return false;
+                }
 
 		/*if (selectedPiece instanceof King) {
 			kingTest((King) selectedPiece, destinationCoord);
@@ -97,8 +100,7 @@ public class ChessGame {
 			((Pawn) selectedPiece).setHasMoved(true);
 		}
 		if ((selectedPiece instanceof Pawn) && ((Pawn) selectedPiece).promoteCheck()) {
-			String pieceName = getPieceName();
-			promotePawn(selectedPiece, pieceName);
+			selectedPiece = promotePawn((Pawn)selectedPiece);
 		}
 		
 		currentPlayer.addMove(selectedPiece + destinationCoord.getNotation());
@@ -147,17 +149,18 @@ public class ChessGame {
 			white = playerTwo;
 			black = playerOne;
 		}
-		board = new Board(white, black);
+		board = new Board(white, black) {
+			@Override
+			public void removePieceGUI(Coordinate coord) {
+				gameInterface.removePiece(coord);
+			}
+			
+		};
 		whiteTurn = true;
 		moves = 0;
 		movesWithoutAgress = 0;
 	}
 
-	private String getPieceName() {
-		// asks what piece the player wants
-		// TODO finish this
-		return "";
-	}
 
 	private boolean oneGoesFirst() {
 		// asks player one if he/she wantsto go first, returns true if yes,
@@ -315,28 +318,22 @@ public class ChessGame {
 		return inCheck;
 	}
 
-	public void promotePawn(Piece piece, String pieceName) {
-		Piece newPiece;
-		newPiece = promotedPiece(piece.getCoord(), piece.getColor(), pieceName);
-		while (newPiece == null)
-			newPiece = promotedPiece(piece.getCoord(), piece.getColor(), pieceName);
+	public Queen promotePawn(Pawn piece) {
+		Queen newPiece = promotedPiece(piece.getCoord(), piece.getColor());
 		board.getLocAt(piece.getCoord()).setPiece(newPiece);
-		if (piece.getColor() == Color.WHITE)
+		if (piece.getColor() == Color.WHITE) {
 			board.getWhitePlayer().addPiece(newPiece);
-		else
+			board.getWhitePlayer().removePiece(piece);
+		}else {
 			board.getBlackPlayer().addPiece(newPiece);
+			board.getBlackPlayer().removePiece(piece);
+		}
+		gameInterface.promotePawn(piece.getColor(), piece.getCoord());
+		return newPiece;
 	}
 
-	public Piece promotedPiece(Coordinate coord, Color color, String piece) {
-		if (piece.equals("Queen"))
-			return new Queen(color, coord);
-		if (piece.equals("Rook"))
-			return new Rook(color, coord);
-		if (piece.equals("Knight"))
-			return new Knight(color, coord);
-		if (piece.equals("Bishop"))
-			return new Bishop(color, coord);
-		return null;
+	public Queen promotedPiece(Coordinate coord, Color color) {
+		return new Queen(color, coord);
 	}
 
 	public Player winningPlayer() {
