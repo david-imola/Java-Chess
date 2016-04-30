@@ -245,6 +245,7 @@ public class ChessGameDriver extends JFrame implements MouseMotionListener, Mous
 	public void removePiece(Coordinate coord) {
 		JPanel panel = (JPanel) chessBoard.getComponent(coordToComponentIndex(coord));
 		panel.removeAll();
+		panel.repaint();
 	}
 
 }
