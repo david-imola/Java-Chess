@@ -26,7 +26,11 @@ public class ChessGame {
 	 * // asks to see if a replay is wanted
 	 * }
 	 */
-
+	 
+	 
+	 /**ChessGameDriver uses this to process a result
+	 @param selectedCoord the Coordinate selected 
+	 @param destinationCoord the Coordinate destined*/
 	public boolean process(Coordinate selectedCoord, Coordinate destinationCoord) {
 		String displayResult = "";
 		Player currentPlayer;
@@ -118,7 +122,8 @@ public class ChessGame {
 		
 		return true;
 	}
-
+	
+	//not used
 	private void kingTest(King selectedPiece, Coordinate destinationCoord) {
 		Piece rook;
 		Coordinate nextDest;
@@ -141,6 +146,9 @@ public class ChessGame {
 		((King) selectedPiece).setHasMoved(true);
 	}
 
+        /**Sets up a game
+        @param PlayerOne the first player
+        @param PlayerTwo the second player*/
 	private void gameSetup(Player playerOne, Player playerTwo) {
 		if (oneGoesFirst()) {
 			white = playerOne;
@@ -162,20 +170,21 @@ public class ChessGame {
 	}
 
 
+
 	private boolean oneGoesFirst() {
 		// asks player one if he/she wantsto go first, returns true if yes,
 		// false if not.
-		// TODO finish this
 		return false;
 	}
-
+       /***/
 	private void castleHelper(Piece rook, Coordinate nextDest) {
 		board.getLocAt(rook.getCoord()).setPiece(null);
 		board.getLocAt(nextDest).setPiece(rook);
 		rook.setCoord(nextDest);
 		((Rook) rook).setHasMoved(true);
 	}
-
+	
+	/**Checks if the game is over*/
 	private String checkGameOver() {
 		if (checkDraw())
 			return "Draw";
