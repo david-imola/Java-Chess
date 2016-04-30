@@ -4,6 +4,7 @@ import java.util.*;
 
 import javax.swing.*;
 
+/**The Driver for this program*/
 public class ChessGameDriver extends JFrame implements MouseMotionListener, MouseListener, ChessGameInterface {
 	JLayeredPane layeredPane;
 	JPanel chessBoard;
@@ -20,22 +21,23 @@ public class ChessGameDriver extends JFrame implements MouseMotionListener, Mous
 
 	ChessGame game;
 
+       /*Consructs a ChessGameDriver*/
 	public ChessGameDriver() {
 		Dimension boardSize = new Dimension(600, 600);
 		Dimension windowSize = new Dimension(600, 630);
 
-		// Use a Layered Pane for this this application
+		// Using a layered pane
+		// A layered pane adds depth to our JFrame
 		layeredPane = new JLayeredPane();
 		getContentPane().add(layeredPane);
 		layeredPane.setPreferredSize(windowSize);
 		layeredPane.addMouseListener(this);
 		layeredPane.addMouseMotionListener(this);
 
-		// Add a chess board to the Layered Pane
-
+		// Add our empty chessboard to the pane
 		chessBoard = new JPanel();
 		layeredPane.add(chessBoard, JLayeredPane.DEFAULT_LAYER);
-		chessBoard.setLayout(new GridLayout(9, 8));
+		chessBoard.setLayout(new GridLayout(9, 8)); //GridLayout perfect for chess game
 		chessBoard.setPreferredSize(boardSize);
 		chessBoard.setBounds(0, 0, boardSize.width, boardSize.height);
 
@@ -43,7 +45,7 @@ public class ChessGameDriver extends JFrame implements MouseMotionListener, Mous
 			JPanel square = new JPanel(new BorderLayout());
 			chessBoard.add(square);
 
-			int row = (i / 8) % 2;
+			int row = (i / 8) % 2; //alternates colors
 			if (row == 0)
 				square.setBackground(i % 2 == 0 ? java.awt.Color.white : brown);
 			else
@@ -81,25 +83,33 @@ public class ChessGameDriver extends JFrame implements MouseMotionListener, Mous
 		addPiece("Queen.png", 7, 3);
 		addPiece("King.png", 7, 4);
 
+                //finally, creates new instance of game
 		game = new ChessGame(new Player("Black"), new Player("White"), this);
 
 	}
 
+        
 	private void addPiece(ImageIcon ico, int num, int letter) {
 		Coordinate coord = new Coordinate(num, letter);
 		addPiece(ico, coord);
 	}
-
+	
+	/**Adds a piece to the Location (square) at given coordinate with ImageIcon displayed*/
 	private void addPiece(ImageIcon ico, Coordinate coord) {
 		JLabel piece = new JLabel(ico);
 		JPanel panel = (JPanel) chessBoard.getComponent(coordToComponentIndex(coord));
 		panel.add(piece);
 	}
-
+        /**Adds a piece to the Location (square) at given coordinate, with the name of the icon displayed
+        @param ico the name of the Icon
+        @param num the num of the Coordinate
+        @param letter the letter of the Coordinate*/
 	private void addPiece(String ico, int num, int letter) {
 		addPiece(new ImageIcon(ico), num, letter);
 	}
-	
+	        /**Adds a piece to the Location (square) at given coordinate, with the name of the icon displayed
+        @param ico the name of the Icon
+        @param coord the Coordinate of the new Piece*/
 	private void addPiece(String ico, Coordinate coord) {
 		addPiece(new ImageIcon(ico), coord);
 	}
@@ -108,30 +118,30 @@ public class ChessGameDriver extends JFrame implements MouseMotionListener, Mous
 		chessPiece = null;
 		Component c = chessBoard.findComponentAt(e.getX(), e.getY());
 
-		if (c instanceof JPanel || c == output0 || c == output1)
+		if (c instanceof JPanel || c == output0 || c == output1) //if its the output or not a piece
 			return;
 
 		selectedCoord = componentIndexToCoord(chessBoard.getComponentZOrder(c.getParent()));
 
 		Point parentLocation = c.getParent().getLocation();
-		xAdjustment = parentLocation.x - e.getX();
+		xAdjustment = parentLocation.x - e.getX(); //the left up corner of piece minus the initial mouse click location
+		//this keeps the piece drawn relative to the mouse movement
 		yAdjustment = parentLocation.y - e.getY();
 		chessPiece = (JLabel) c;
 		chessPiece.setLocation(e.getX() + xAdjustment, e.getY() + yAdjustment);
 		chessPiece.setSize(chessPiece.getWidth(), chessPiece.getHeight());
-		layeredPane.add(chessPiece, JLayeredPane.DRAG_LAYER);
+		layeredPane.add(chessPiece, JLayeredPane.DRAG_LAYER); //for when a piece is dragged
 	}
 
-	// Move the chess piece around
-
+	/** Called when mouse dragged. Moves the chess piece around */
 	public void mouseDragged(MouseEvent me) {
 		if (chessPiece == null)
 			return;
 		chessPiece.setLocation(me.getX() + xAdjustment, me.getY() + yAdjustment);
+		//this keeps the piece drawn relative to the mouse movement
 	}
 
-	// Drop the chess piece back onto the chess board
-
+	/** Called when mouse released. If there was a piece selected, drop it on its new location */
 	public void mouseReleased(MouseEvent e) {
 		if (chessPiece == null)
 			return;
@@ -171,6 +181,7 @@ public class ChessGameDriver extends JFrame implements MouseMotionListener, Mous
 			parent.remove(0);
 		
 		if(promoteColor != null) {
+			//if it's not null, a pawn is being promoted (to a queen)
 			chessPiece = new JLabel(new ImageIcon(promoteColor == Color.BLACK ? "BlackQueen.png" : "Queen.png"));
 			promoteColor = null;
 		}
@@ -186,7 +197,7 @@ public class ChessGameDriver extends JFrame implements MouseMotionListener, Mous
 	private void resetCoords() {
 		selectedCoord = null;
 		destinationCoord = null;
-		
+		//prevents interference
 	}
 
 	public void mouseClicked(MouseEvent e) {
@@ -203,13 +214,13 @@ public class ChessGameDriver extends JFrame implements MouseMotionListener, Mous
 	public void mouseExited(MouseEvent e) {
 
 	}
-
+       /**@return the Coordinate at the Location Index in the chessBoard*/
 	public static Coordinate componentIndexToCoord(int component) {
 		int row = component / 8; // aka num
 		int col = component % 8; // aka letter
 		return new Coordinate(row, col);
 	}
-
+       /**@return the index of a component in the chessboard based on a coordinate*/
 	public static int coordToComponentIndex(Coordinate coord) {
 		
 		return 8 * coord.num + coord.letter;
@@ -235,7 +246,7 @@ public class ChessGameDriver extends JFrame implements MouseMotionListener, Mous
 	public void displayResult1(String result) {
 		output1.setText(result);
 	}
-
+	
 	@Override
 	public void promotePawn(Color color, Coordinate coord) {
 		promoteColor = color;
