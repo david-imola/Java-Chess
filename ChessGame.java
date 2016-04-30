@@ -3,11 +3,12 @@
 import java.util.ArrayList;
 
 /**
- *A game class. Used for playing one game */
+ * A game class. Used for playing one game
+ */
 public class ChessGame {
 
 	private Board board;
-    private String result;
+	private String result;
 	private int movesWithoutAgress;
 	private int moves;
 	private boolean whiteTurn;
@@ -18,7 +19,7 @@ public class ChessGame {
 	public ChessGame(Player playerOne, Player playerTwo, ChessGameInterface gameInterface) {
 		gameSetup(playerOne, playerTwo);
 		this.gameInterface = gameInterface;
-                result = "Continue";
+		result = "Continue";
 	}
 
 	/*
@@ -26,40 +27,44 @@ public class ChessGame {
 	 * // asks to see if a replay is wanted
 	 * }
 	 */
-	 
-	 
-	 /**ChessGameDriver uses this to process a result
-	 @param selectedCoord the Coordinate selected 
-	 @param destinationCoord the Coordinate destined*/
+
+	/**
+	 * ChessGameDriver uses this to process a result
+	 * 
+	 * @param selectedCoord
+	 *            the Coordinate selected
+	 * @param destinationCoord
+	 *            the Coordinate destined
+	 */
 	public boolean process(Coordinate selectedCoord, Coordinate destinationCoord) {
 		String displayResult = "";
 		Player currentPlayer;
 		System.out.println(result);
-                if (result.equals("Continue")) {
-                    if (whiteTurn)
-                            currentPlayer = board.getWhitePlayer();
-                    else
-                            currentPlayer = board.getBlackPlayer();
+		if (result.equals("Continue")) {
+			if (whiteTurn)
+				currentPlayer = board.getWhitePlayer();
+			else
+				currentPlayer = board.getBlackPlayer();
 
-                    if (!makeMove(currentPlayer, selectedCoord, destinationCoord)) {
-                            return false;
-                    } else {
-                            gameInterface.displayResult1("");
-                    }
-                    whiteTurn = !whiteTurn;
-                    result = checkGameOver();
-                    if (result.equals("Continue")) {
-                        if (whiteTurn)
-                        	displayResult = "White Turn";
-                        else
-                        	displayResult = "Black Turn";
-                    } else {
-                        displayResult = result;
-                    }
-                    gameInterface.displayResult0(displayResult);
-                    return true;
-                }
-                gameInterface.displayResult0(result);
+			if (!makeMove(currentPlayer, selectedCoord, destinationCoord)) {
+				return false;
+			} else {
+				gameInterface.displayResult1("");
+			}
+			whiteTurn = !whiteTurn;
+			result = checkGameOver();
+			if (result.equals("Continue")) {
+				if (whiteTurn)
+					displayResult = "White Turn";
+				else
+					displayResult = "Black Turn";
+			} else {
+				displayResult = result;
+			}
+			gameInterface.displayResult0(displayResult);
+			return true;
+		}
+		gameInterface.displayResult0(result);
 		return false;
 	}
 
@@ -67,26 +72,28 @@ public class ChessGame {
 
 		Piece selectedPiece = board.getPieceAtCoord(selectedCoord);
 		System.out.println(selectedPiece);
-		if (selectedPiece == null || !currentPlayer.getColor().equals(selectedPiece.getColor())) 
+		if (selectedPiece == null || !currentPlayer.getColor().equals(selectedPiece.getColor()))
 			return false;
 		Piece cappedPiece;
 		if (selectedCoord.equals(destinationCoord))
 			return false;
 		boolean capture = false;
 		if (!(selectedPiece.testMove(board, destinationCoord))) {
-                        gameInterface.displayResult1("Not Valid" );
+			gameInterface.displayResult1("Not Valid");
 			return false;
-                } else {
-                        gameInterface.displayResult1("");  
-                }
-                if (ChessGame.testCheck(board, destinationCoord, selectedCoord, whiteTurn)) {
-                	gameInterface.displayResult1("Check!");
-                        return false;
-                }
+		} else {
+			gameInterface.displayResult1("");
+		}
+		if (ChessGame.testCheck(board, destinationCoord, selectedCoord, whiteTurn)) {
+			gameInterface.displayResult1("Check!");
+			return false;
+		}
 
-		/*if (selectedPiece instanceof King) {
-			kingTest((King) selectedPiece, destinationCoord);
-		} */
+		/*
+		 * if (selectedPiece instanceof King) {
+		 * kingTest((King) selectedPiece, destinationCoord);
+		 * }
+		 */
 		if ((selectedPiece instanceof Rook) && (!((Rook) selectedPiece).hasMoved())) {
 			((Rook) selectedPiece).setHasMoved(true);
 		}
@@ -100,13 +107,13 @@ public class ChessGame {
 				capture = false;
 			}
 		}
-		if(selectedPiece instanceof Pawn && !((Pawn) selectedPiece).hasMoved()) {
+		if (selectedPiece instanceof Pawn && !((Pawn) selectedPiece).hasMoved()) {
 			((Pawn) selectedPiece).setHasMoved(true);
 		}
 		if ((selectedPiece instanceof Pawn) && ((Pawn) selectedPiece).promoteCheck()) {
-			selectedPiece = promotePawn((Pawn)selectedPiece);
+			selectedPiece = promotePawn((Pawn) selectedPiece);
 		}
-		
+
 		currentPlayer.addMove(selectedPiece + destinationCoord.getNotation());
 		if (currentPlayer.getColor() == Color.BLACK)
 			moves++;
@@ -118,37 +125,18 @@ public class ChessGame {
 		board.getLocAt(selectedCoord).setPiece(null);
 		board.getLocAt(destinationCoord).setPiece(selectedPiece);
 		selectedPiece.setCoord(destinationCoord);
-		
-		
+
 		return true;
 	}
-	
-	//not used
-	private void kingTest(King selectedPiece, Coordinate destinationCoord) {
-		Piece rook;
-		Coordinate nextDest;
-		int num;
-		if (selectedPiece.getColor() == Color.WHITE)
-			num = 7;
-		else
-			num = 0;
-		if (!selectedPiece.hasMoved()) {
-			if (destinationCoord.equals(new Coordinate(num, 6))) {
-				rook = board.getPieceAtCoord(new Coordinate(num, 7));
-				nextDest = new Coordinate(num, 5);
-				castleHelper(rook, nextDest);
-			} else if (destinationCoord.equals(new Coordinate(num, 2))) {
-				rook = board.getPieceAtCoord(new Coordinate(num, 0));
-				nextDest = new Coordinate(num, 3);
-				castleHelper(rook, nextDest);
-			}
-		}
-		((King) selectedPiece).setHasMoved(true);
-	}
 
-        /**Sets up a game
-        @param PlayerOne the first player
-        @param PlayerTwo the second player*/
+	/**
+	 * Sets up a game
+	 * 
+	 * @param PlayerOne
+	 *            the first player
+	 * @param PlayerTwo
+	 *            the second player
+	 */
 	private void gameSetup(Player playerOne, Player playerTwo) {
 		if (oneGoesFirst()) {
 			white = playerOne;
@@ -162,37 +150,28 @@ public class ChessGame {
 			public void removePieceGUI(Coordinate coord) {
 				gameInterface.removePiece(coord);
 			}
-			
+
 		};
 		whiteTurn = true;
 		moves = 0;
 		movesWithoutAgress = 0;
 	}
 
-
-
+	/** If Player One Goes first @return false */
 	private boolean oneGoesFirst() {
-		// asks player one if he/she wantsto go first, returns true if yes,
-		// false if not.
 		return false;
 	}
-       /***/
-	private void castleHelper(Piece rook, Coordinate nextDest) {
-		board.getLocAt(rook.getCoord()).setPiece(null);
-		board.getLocAt(nextDest).setPiece(rook);
-		rook.setCoord(nextDest);
-		((Rook) rook).setHasMoved(true);
-	}
-	
-	/**Checks if the game is over*/
+
+	/** Checks if the game is over */
 	private String checkGameOver() {
-		if (checkDraw())
+		if (checkDraw(whiteTurn ? Color.WHITE : Color.BLACK))
 			return "Draw";
 		if (checkWin())
 			return winningPlayer().getName() + " wins!";
 		return "Continue";
 	}
 
+	/** Checks if a player has won */
 	private boolean checkWin() {
 		Player white = getWhitePlayer();
 		Player black = getBlackPlayer();
@@ -200,43 +179,59 @@ public class ChessGame {
 			return checkMate(white);
 		else if (!whiteTurn && black.getKing().isInCheck(board, getWhitePlayer()))
 			return checkMate(black);
-		return false; 
+		return false;
 	}
 
+	/**
+	 * Checks if the current player has a check mate
+	 * 
+	 * @return true if the current player has a checkmate
+	 */
 	private boolean checkMate(Player currentPlayer) {
 		ArrayList<Piece> pieces = currentPlayer.getPieces();
 		for (Piece piece : pieces) {
-			if (piece.hasMove(board,(King) currentPlayer.getKing(), whiteTurn))
+			if (piece.hasMove(board, (King) currentPlayer.getKing(), whiteTurn))
 				return false;
 		}
 		return true;
 	}
 
-	private boolean checkDraw() {
-		// TODO fix this
+	/**
+	 * Checks if theres a draw
+	 * 
+	 * @return true if theres a draw
+	 */
+	private boolean checkDraw(Color color) {
+
+		if (fiftyMoveRule())
+			return true;
+		if (unwinnableGame())
+			return true;
+		if (stalemate(color))
+			return true;
+		if (threeMoveRule())
+			return true;
 		return false;
-		/*
-		 * if (fiftyMoveRule())
-		 * return true;
-		 * if (unwinnableGame())
-		 * return true;
-		 * // TODO finish this
-		 * // if (stalemate(turn))
-		 * // return true;
-		 * if (threeMoveRule())
-		 * return true;
-		 * return false;
-		 */
+
 	}
 
+	/** @return true if a game hits 50 moves */
 	private boolean fiftyMoveRule() {
 		return movesWithoutAgress == 50;
 	}
 
+	/** @return true if a game is unwinnable */
 	private boolean unwinnableGame() {
 		return (!matingMater(board.getWhitePlayer()) && !matingMater(board.getBlackPlayer()));
 	}
 
+	/**
+	 * Used to determine if a game is unwinnable
+	 * 
+	 * @param player
+	 *            the current player
+	 * @return true if a game is still winnable
+	 */
 	private boolean matingMater(Player player) {
 		Color squareColor;
 		int bishopWhiteCount = 0;
@@ -269,6 +264,7 @@ public class ChessGame {
 		return (bishopWhiteCount >= 1) && (bishopBlackCount >= 1);
 	}
 
+	/** @return true if either player cant beat the other */
 	public boolean stalemate(Color color) {
 		ArrayList<Piece> pieces;
 		if (color == Color.WHITE)
@@ -282,6 +278,7 @@ public class ChessGame {
 		return true;
 	}
 
+	/** @return true if the board is in the same position after three moves */
 	public boolean threeMoveRule() {
 		ArrayList<String> whiteMoves = board.getWhitePlayer().getMoves();
 		ArrayList<String> blackMoves = board.getBlackPlayer().getMoves();
@@ -290,6 +287,7 @@ public class ChessGame {
 		return testLastMoves(whiteMoves) && testLastMoves(blackMoves);
 	}
 
+	/** Used to help threeMoveRule() */
 	private boolean testLastMoves(ArrayList<String> moves) {
 		String move = moves.get(moves.size() - 3);
 		for (int i = 2; i > 0; i--)
@@ -298,42 +296,50 @@ public class ChessGame {
 		return true;
 	}
 
+	/** Tests if a player is in check */
 	public static boolean testCheck(Board otherBoard, Coordinate to, Coordinate from, boolean turn) {
 		Piece tempPiece = otherBoard.replace(to, from);
 		Player player;
-                Player oppPlayer;
+		Player oppPlayer;
 		King king;
 		boolean inCheck = false;
 		if (turn) {
 			player = otherBoard.getWhitePlayer();
-                        oppPlayer = otherBoard.getBlackPlayer();
-                } else {
+			oppPlayer = otherBoard.getBlackPlayer();
+		} else {
 			player = otherBoard.getBlackPlayer();
-                        oppPlayer = otherBoard.getWhitePlayer();
-                }
+			oppPlayer = otherBoard.getWhitePlayer();
+		}
 		king = player.getKing();
 		if (tempPiece != null) {
-                    oppPlayer.removePiece(tempPiece);
-                }
+			oppPlayer.removePiece(tempPiece);
+		}
 		if (king.isInCheck(otherBoard, oppPlayer)) {
 			inCheck = true;
 		}
-                otherBoard.getLocAt(to).getPiece().setCoord(from);
+		otherBoard.getLocAt(to).getPiece().setCoord(from);
 		otherBoard.getLocAt(from).setPiece(otherBoard.getLocAt(to).getPiece());
 		otherBoard.getLocAt(to).setPiece(tempPiece);
-                
-                if (tempPiece != null)
-                    oppPlayer.addPiece(tempPiece);
+
+		if (tempPiece != null)
+			oppPlayer.addPiece(tempPiece);
 		return inCheck;
 	}
 
+	/**
+	 * Promotes a pawn to a queen when it reaches the other side
+	 * 
+	 * @param piece
+	 *            the Pawn to be promoted
+	 * @return Queen the newly created QueenÏ
+	 */
 	public Queen promotePawn(Pawn piece) {
 		Queen newPiece = promotedPiece(piece.getCoord(), piece.getColor());
 		board.getLocAt(piece.getCoord()).setPiece(newPiece);
 		if (piece.getColor() == Color.WHITE) {
 			board.getWhitePlayer().addPiece(newPiece);
 			board.getWhitePlayer().removePiece(piece);
-		}else {
+		} else {
 			board.getBlackPlayer().addPiece(newPiece);
 			board.getBlackPlayer().removePiece(piece);
 		}
@@ -341,11 +347,13 @@ public class ChessGame {
 		return newPiece;
 	}
 
+	/** The queen that the promoted pawn turns into */
 	public Queen promotedPiece(Coordinate coord, Color color) {
 		return new Queen(color, coord);
 	}
 
-	public Player winningPlayer() {
+	/** @return the winner of this game */
+	private Player winningPlayer() {
 		if (whiteTurn)
 			return board.getBlackPlayer();
 		else
