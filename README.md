@@ -1,2 +1,2 @@
 # chessclone  
-A chessy thing
+Just a basic chess game. Run ChessDriver to use.
