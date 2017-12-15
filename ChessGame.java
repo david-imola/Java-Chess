@@ -266,12 +266,21 @@ public class ChessGame {
 
 	/** @return true if either player cant beat the other */
 	public boolean stalemate(Color color) {
+		/*
 		ArrayList<Piece> pieces;
 		if (color == Color.WHITE)
 			pieces = board.getWhitePlayer().getPieces();
 		else
 			pieces = board.getBlackPlayer().getPieces();
 		for (Piece piece : pieces) {
+			if (piece.hasMove(board, getWhitePlayer().getKing(), whiteTurn))
+				return false;
+		}
+		*/
+		
+		ArrayList<Piece> pieces = new ArrayList<Piece>(board.getWhitePlayer().getPieces());
+		pieces.addAll(board.getBlackPlayer().getPieces());
+		for(Piece piece: pieces) {
 			if (piece.hasMove(board, getWhitePlayer().getKing(), whiteTurn))
 				return false;
 		}
