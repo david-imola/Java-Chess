@@ -1,2 +1,2 @@
 # chessclone  
-Just a basic chess game. Run ChessDriver to use. Warning: code is a bit sloppy
+A basic chess game we coded for AP Computer Science. Run ChessDriver to use.
